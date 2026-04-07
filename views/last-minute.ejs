@@ -1,0 +1,39 @@
+<%- include('partials/header') %>
+
+<section class="panel">
+  <h1>⚡ Last Minute Mode</h1>
+  <p>Top performing notes and shortest summaries to revise fast.</p>
+</section>
+
+<section class="panel">
+  <h2>Top 20 Most Liked / Viewed</h2>
+  <div class="cards-grid">
+    <% topLiked.forEach((note) => { %>
+      <article class="note-card">
+        <h3><a href="/notes/<%= note.id %>"><%= note.title %></a></h3>
+        <p><%= note.subject %> | <%= note.contributor_name %></p>
+        <div class="metrics">
+          <span>👍 <%= note.likes_count %></span>
+          <span>👁️ <%= note.views_count %></span>
+        </div>
+      </article>
+    <% }) %>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Shortest Summaries</h2>
+  <div class="cards-grid">
+    <% if (shortSummaries.length === 0) { %>
+      <article class="empty-state">No summaries available yet.</article>
+    <% } %>
+    <% shortSummaries.forEach((note) => { %>
+      <article class="note-card">
+        <h3><a href="/notes/<%= note.id %>"><%= note.title %></a></h3>
+        <p><%= note.description || 'No description' %></p>
+      </article>
+    <% }) %>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

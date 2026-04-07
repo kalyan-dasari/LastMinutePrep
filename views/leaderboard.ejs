@@ -1,0 +1,43 @@
+<%- include('partials/header') %>
+
+<section class="panel">
+  <h1>Top Contributors</h1>
+  <p>Ranked by likes, uploads, and total engagement.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Name</th>
+          <th>Branch</th>
+          <th>Uploads</th>
+          <th>Likes</th>
+          <th>Views</th>
+          <th>Score</th>
+          <th>Badge</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% board.forEach((row, index) => { %>
+          <tr>
+            <td>#<%= index + 1 %></td>
+            <td><a href="/profile/<%= row.id %>"><%= row.name %></a></td>
+            <td><%= row.branch %></td>
+            <td><%= row.uploads_count %></td>
+            <td><%= row.likes_received %></td>
+            <td><%= row.views_received %></td>
+            <td><strong><%= row.score %></strong></td>
+            <td>
+              <% if (index === 0) { %>🥇 Exam Hero<% } %>
+              <% if (index === 1) { %>🥈 Top Contributor<% } %>
+              <% if (index === 2) { %>🥉 Rising Star<% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

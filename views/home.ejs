@@ -1,0 +1,107 @@
+<%- include('partials/header') %>
+
+<section class="hero">
+  <div class="hero-copy">
+    <p class="eyebrow">Your ReviseHub for Every Exam</p>
+    <h1>Study smarter, revise faster, score with confidence.</h1>
+    <p class="tagline">A student-driven platform where high-value notes, quick summaries, and peer feedback help you win even in last-minute prep.</p>
+    <div class="quote-spotlight">
+      <p class="quote-label">Hero Quote</p>
+      <p class="quote-text">"Sapna bada ho ya chhota - LastMinutePrep makes it possible."</p>
+    </div>
+    <div class="hero-actions">
+      <a href="/upload" class="btn-primary">Upload Notes</a>
+      <a href="/last-minute" class="btn-secondary">⚡ Last Minute Mode</a>
+    </div>
+    <div class="trust-row">
+      <span>Built for college students</span>
+      <span>Fast PDF revision workflow</span>
+      <span>Community ranked quality notes</span>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <article>
+      <h3><%= notes.length %></h3>
+      <p>Notes shared</p>
+    </article>
+    <article>
+      <h3><%= subjects.length %></h3>
+      <p>Subjects active</p>
+    </article>
+    <article>
+      <h3><%= branches.length %></h3>
+      <p>Branches covered</p>
+    </article>
+    <article class="hero-highlight">
+      <h4>What makes it powerful?</h4>
+      <ul>
+        <li>One-click Last Minute Mode</li>
+        <li>Smart search with subject keywords</li>
+        <li>Leaderboard-driven quality content</li>
+      </ul>
+    </article>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Smart Search + Filters</h2>
+  <p class="panel-subtitle">Find the exact note you need by subject, branch, year, exam type, or keyword.</p>
+  <form method="get" action="/" class="filters-grid">
+    <input type="text" name="q" placeholder="Search keywords: Important questions DBMS" value="<%= filters.q || '' %>" />
+    <input type="text" name="subject" placeholder="Subject" value="<%= filters.subject || '' %>" />
+    <input type="text" name="branch" placeholder="Branch" value="<%= filters.branch || '' %>" />
+    <select name="year">
+      <option value="">Any year</option>
+      <% ['1st','2nd','3rd','4th'].forEach((y) => { %>
+        <option value="<%= y %>" <%= filters.year === y ? 'selected' : '' %>><%= y %></option>
+      <% }) %>
+    </select>
+    <select name="exam_type">
+      <option value="">Any exam</option>
+      <% ['Mid','Semester','End Exam'].forEach((e) => { %>
+        <option value="<%= e %>" <%= filters.exam_type === e ? 'selected' : '' %>><%= e %></option>
+      <% }) %>
+    </select>
+    <select name="sort">
+      <option value="latest" <%= (filters.sort || 'latest') === 'latest' ? 'selected' : '' %>>Latest</option>
+      <option value="liked" <%= filters.sort === 'liked' ? 'selected' : '' %>>Most liked</option>
+      <option value="viewed" <%= filters.sort === 'viewed' ? 'selected' : '' %>>Most viewed</option>
+    </select>
+    <button type="submit" class="btn-primary">Apply</button>
+  </form>
+</section>
+
+<section>
+  <h2>Notes Feed</h2>
+  <p class="panel-subtitle">Fresh uploads from contributors across campuses.</p>
+  <div class="cards-grid">
+    <% if (notes.length === 0) { %>
+      <article class="empty-state">No notes found. Try changing filters or upload your first note.</article>
+    <% } %>
+    <% notes.forEach((note) => { %>
+      <article class="note-card reveal-on-scroll card-clickable" data-href="<%= note.file_path %>" data-target-blank="true">
+        <div class="chip-row">
+          <span class="chip"><%= note.subject %></span>
+          <span class="chip muted"><%= note.exam_type %></span>
+        </div>
+        <h3><%= note.title %></h3>
+        <p>By <a href="/profile/<%= note.user_id %>"><%= note.contributor_name %></a></p>
+        <p class="meta"><%= note.branch %> | <%= note.year %> Year</p>
+        <div class="metrics">
+          <span>👍 <%= note.likes_count %></span>
+          <span>👁️ <%= note.views_count %></span>
+        </div>
+        <div class="card-actions">
+          <form method="post" action="/notes/<%= note.id %>/like" class="inline-form no-card-nav">
+            <input type="hidden" name="redirect_to" value="/" />
+            <button type="submit" class="btn-secondary">Like 👍</button>
+          </form>
+          <a href="<%= note.file_path %>" target="_blank" rel="noopener" class="btn-primary no-card-nav">Open PDF</a>
+          <a href="/notes/<%= note.id %>" class="btn-secondary no-card-nav">Discussion</a>
+        </div>
+      </article>
+    <% }) %>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

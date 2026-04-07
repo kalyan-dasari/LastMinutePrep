@@ -1,0 +1,54 @@
+<%- include('partials/header') %>
+
+<section class="panel note-detail">
+  <div class="chip-row">
+    <span class="chip"><%= note.subject %></span>
+    <span class="chip muted"><%= note.exam_type %></span>
+  </div>
+  <h1><%= note.title %></h1>
+  <p>By <a href="/profile/<%= note.contributor_id %>"><%= note.contributor_name %></a> | <%= note.branch %> | <%= note.year %> Year</p>
+  <% if (note.description) { %>
+    <p><%= note.description %></p>
+  <% } %>
+
+  <div class="action-row">
+    <form method="post" action="/notes/<%= note.id %>/like" class="inline-form">
+      <button type="submit" class="btn-secondary"><%= likedByMe ? 'Liked' : 'Like' %> 👍</button>
+    </form>
+    <a class="btn-primary" href="<%= note.file_path %>" download>Download PDF</a>
+    <a class="btn-secondary" href="<%= note.file_path %>" target="_blank" rel="noopener">Open PDF in New Tab</a>
+    <span class="metric-pill">👍 <%= note.likes_count %></span>
+    <span class="metric-pill">👁️ <%= note.views_count %></span>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>PDF Viewer</h2>
+  <iframe src="<%= note.file_path %>" class="pdf-frame" title="PDF Viewer"></iframe>
+</section>
+
+<section class="panel">
+  <h2>Comments</h2>
+  <form method="post" action="/notes/<%= note.id %>/comment" class="comment-form">
+    <% if (!currentUser) { %>
+      <input type="text" name="guest_name" placeholder="Your name (optional)" maxlength="50" />
+    <% } %>
+    <textarea name="comment" rows="3" placeholder="Give feedback or ask doubts" required></textarea>
+    <button type="submit" class="btn-primary">Post Comment</button>
+  </form>
+
+  <div class="comments-list">
+    <% if (comments.length === 0) { %>
+      <p>No comments yet. Start the discussion.</p>
+    <% } %>
+    <% comments.forEach((c) => { %>
+      <article class="comment-item">
+        <strong><%= c.display_name %></strong>
+        <p><%= c.comment %></p>
+        <small><%= new Date(c.created_at).toLocaleString() %></small>
+      </article>
+    <% }) %>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

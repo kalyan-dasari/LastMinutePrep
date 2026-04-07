@@ -1,0 +1,31 @@
+<%- include('partials/header') %>
+
+<section class="panel">
+  <h1>Subject Categories</h1>
+  <p class="panel-subtitle">Open the top note PDF directly from each subject card, no extra navigation loops.</p>
+  <div class="cards-grid">
+    <% if (categories.length === 0) { %>
+      <article class="empty-state">No categories yet. Upload notes to build the hub.</article>
+    <% } %>
+    <% categories.forEach((cat) => { %>
+      <article class="note-card card-clickable" data-href="<%= cat.featured_file_path || '#' %>" data-target-blank="true">
+        <h3><%= cat.subject %></h3>
+        <p><%= cat.note_count %> notes</p>
+        <p><%= cat.likes %> likes total</p>
+        <% if (cat.featured_title) { %>
+          <p class="meta">Top note: <%= cat.featured_title %></p>
+        <% } %>
+        <div class="card-actions">
+          <% if (cat.featured_file_path) { %>
+            <a href="<%= cat.featured_file_path %>" target="_blank" rel="noopener" class="btn-primary no-card-nav">Open PDF</a>
+          <% } %>
+          <% if (cat.featured_note_id) { %>
+            <a href="/notes/<%= cat.featured_note_id %>" class="btn-secondary no-card-nav">Discussion</a>
+          <% } %>
+        </div>
+      </article>
+    <% }) %>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

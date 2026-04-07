@@ -1,0 +1,76 @@
+<%- include('partials/header') %>
+
+<section class="panel">
+  <h1>Admin Panel</h1>
+  <p>Manage users and remove spam or low-quality notes.</p>
+</section>
+
+<section class="panel">
+  <h2>All Notes</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Subject</th>
+          <th>Contributor</th>
+          <th>Created</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% notes.forEach((note) => { %>
+          <tr>
+            <td><a href="/notes/<%= note.id %>"><%= note.title %></a></td>
+            <td><%= note.subject %></td>
+            <td><%= note.contributor_name %></td>
+            <td><%= new Date(note.created_at).toLocaleDateString() %></td>
+            <td>
+              <form method="post" action="/admin/notes/<%= note.id %>/delete" class="inline-form" onsubmit="return confirm('Delete this note?')">
+                <button type="submit" class="btn-danger">Delete</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Users</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Branch</th>
+          <th>Year</th>
+          <th>Role</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% users.forEach((user) => { %>
+          <tr>
+            <td><a href="/profile/<%= user.id %>"><%= user.name %></a></td>
+            <td><%= user.email %></td>
+            <td><%= user.branch %></td>
+            <td><%= user.year %></td>
+            <td><%= user.role %></td>
+            <td>
+              <% if (user.role !== 'admin') { %>
+                <form method="post" action="/admin/users/<%= user.id %>/delete" class="inline-form" onsubmit="return confirm('Delete this user?')">
+                  <button type="submit" class="btn-danger">Delete</button>
+                </form>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

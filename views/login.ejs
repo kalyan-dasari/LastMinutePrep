@@ -1,0 +1,26 @@
+<%- include('partials/header') %>
+
+<section class="panel auth-card">
+  <h1>Welcome back</h1>
+  <p>Login to upload and support your college community.</p>
+
+  <% if (errors.length) { %>
+    <ul class="error-list">
+      <% errors.forEach((error) => { %>
+        <li><%= error.msg %></li>
+      <% }) %>
+    </ul>
+  <% } %>
+
+  <form method="post" action="/login" class="form-grid">
+    <label>Email
+      <input type="email" name="email" value="<%= old.email || '' %>" required />
+    </label>
+    <label>Password
+      <input type="password" name="password" required />
+    </label>
+    <button type="submit" class="btn-primary">Login</button>
+  </form>
+</section>
+
+<%- include('partials/footer') %>

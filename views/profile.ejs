@@ -1,0 +1,33 @@
+<%- include('partials/header') %>
+
+<section class="panel">
+  <h1><%= profileUser.name %></h1>
+  <p><%= profileUser.college %> | <%= profileUser.branch %> | <%= profileUser.year %> Year</p>
+
+  <div class="stats-row">
+    <article><h3><%= uploadsCount %></h3><p>Uploads</p></article>
+    <article><h3><%= likesReceived %></h3><p>Total Likes</p></article>
+    <article><h3>#<%= rank %></h3><p>Rank</p></article>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Uploaded Notes</h2>
+  <div class="cards-grid">
+    <% if (uploads.length === 0) { %>
+      <article class="empty-state">No uploads yet.</article>
+    <% } %>
+    <% uploads.forEach((note) => { %>
+      <article class="note-card">
+        <h3><a href="/notes/<%= note.id %>"><%= note.title %></a></h3>
+        <p><%= note.subject %></p>
+        <div class="metrics">
+          <span>👍 <%= note.likes_count %></span>
+          <span>👁️ <%= note.views_count %></span>
+        </div>
+      </article>
+    <% }) %>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

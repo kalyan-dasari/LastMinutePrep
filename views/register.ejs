@@ -1,0 +1,41 @@
+<%- include('partials/header') %>
+
+<section class="panel auth-card">
+  <h1>Create your account</h1>
+
+  <% if (errors.length) { %>
+    <ul class="error-list">
+      <% errors.forEach((error) => { %>
+        <li><%= error.msg %></li>
+      <% }) %>
+    </ul>
+  <% } %>
+
+  <form method="post" action="/register" class="form-grid">
+    <label>Name
+      <input type="text" name="name" value="<%= old.name || '' %>" required />
+    </label>
+    <label>Email
+      <input type="email" name="email" value="<%= old.email || '' %>" required />
+    </label>
+    <label>Password
+      <input type="password" name="password" required />
+    </label>
+    <label>College
+      <input type="text" name="college" value="<%= old.college || '' %>" required />
+    </label>
+    <label>Branch
+      <input type="text" name="branch" value="<%= old.branch || '' %>" required />
+    </label>
+    <label>Year
+      <select name="year" required>
+        <% ['1st','2nd','3rd','4th'].forEach((y) => { %>
+          <option value="<%= y %>" <%= old.year === y ? 'selected' : '' %>><%= y %></option>
+        <% }) %>
+      </select>
+    </label>
+    <button type="submit" class="btn-primary">Register</button>
+  </form>
+</section>
+
+<%- include('partials/footer') %>

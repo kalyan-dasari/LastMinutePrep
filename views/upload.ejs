@@ -1,0 +1,49 @@
+<%- include('partials/header') %>
+
+<section class="panel">
+  <h1>Upload Study Notes</h1>
+  <p>Only PDF files are allowed. Your upload appears in the feed instantly.</p>
+
+  <% if (errors.length) { %>
+    <ul class="error-list">
+      <% errors.forEach((error) => { %>
+        <li><%= error.msg %></li>
+      <% }) %>
+    </ul>
+  <% } %>
+
+  <form method="post" action="/upload" enctype="multipart/form-data" class="form-grid">
+    <label>Title
+      <input type="text" name="title" value="<%= old.title || '' %>" required />
+    </label>
+    <label>Subject
+      <input type="text" name="subject" value="<%= old.subject || '' %>" placeholder="DBMS, OS" required />
+    </label>
+    <label>Branch
+      <input type="text" name="branch" value="<%= old.branch || '' %>" placeholder="CSE" required />
+    </label>
+    <label>Year
+      <select name="year" required>
+        <% ['1st','2nd','3rd','4th'].forEach((y) => { %>
+          <option value="<%= y %>" <%= old.year === y ? 'selected' : '' %>><%= y %></option>
+        <% }) %>
+      </select>
+    </label>
+    <label>Exam Type
+      <select name="exam_type" required>
+        <% ['Mid','Semester','End Exam'].forEach((e) => { %>
+          <option value="<%= e %>" <%= old.exam_type === e ? 'selected' : '' %>><%= e %></option>
+        <% }) %>
+      </select>
+    </label>
+    <label>Description (optional)
+      <textarea name="description" rows="4" placeholder="Short summary or important topics"><%= old.description || '' %></textarea>
+    </label>
+    <label>PDF File
+      <input type="file" name="pdf_file" accept="application/pdf" required />
+    </label>
+    <button type="submit" class="btn-primary">Upload Note</button>
+  </form>
+</section>
+
+<%- include('partials/footer') %>

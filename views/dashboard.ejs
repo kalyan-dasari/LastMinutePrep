@@ -1,0 +1,31 @@
+<%- include('partials/header') %>
+
+<section class="panel">
+  <h1>My Dashboard</h1>
+  <div class="stats-row">
+    <article><h3><%= totals.uploads_count %></h3><p>Total Uploads</p></article>
+    <article><h3><%= totals.likes_received %></h3><p>Total Likes Received</p></article>
+    <article><h3>#<%= rank %></h3><p>Current Rank</p></article>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Recent Uploads</h2>
+  <div class="cards-grid">
+    <% if (uploads.length === 0) { %>
+      <article class="empty-state">No uploads yet. Add your first note.</article>
+    <% } %>
+    <% uploads.forEach((note) => { %>
+      <article class="note-card">
+        <h3><a href="/notes/<%= note.id %>"><%= note.title %></a></h3>
+        <p><%= note.subject %></p>
+        <div class="metrics">
+          <span>👍 <%= note.likes_count %></span>
+          <span>👁️ <%= note.views_count %></span>
+        </div>
+      </article>
+    <% }) %>
+  </div>
+</section>
+
+<%- include('partials/footer') %>
