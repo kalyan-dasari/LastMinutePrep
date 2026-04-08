@@ -6,8 +6,18 @@ const bootstrapPromise = bootstrap();
 
 if (isVercel) {
   module.exports = async (req, res) => {
-    await bootstrapPromise;
-    return app(req, res);
+    try {
+      await bootstrapPromise;
+      return app(req, res);
+    } catch (err) {
+      console.error("Bootstrap failed in Vercel runtime:", err);
+      if (!res.headersSent) {
+        res.statusCode = 500;
+        res.setHeader("content-type", "text/plain; charset=utf-8");
+        res.end("Server initialization failed. Check DATABASE_URL and Supabase configuration.");
+      }
+      return undefined;
+    }
   };
 } else {
   bootstrapPromise

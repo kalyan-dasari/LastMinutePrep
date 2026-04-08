@@ -1,4 +1,5 @@
 const path = require("path");
+const os = require("os");
 const sqlite3 = require("sqlite3").verbose();
 const { Pool } = require("pg");
 
@@ -6,7 +7,7 @@ const isVercel = Boolean(process.env.VERCEL);
 const usePostgresConfigured = Boolean(process.env.DATABASE_URL);
 let runtimeMode = usePostgresConfigured ? "postgres" : "sqlite";
 const dbPath = isVercel
-  ? path.join("/tmp", "lastminuteprep.db")
+  ? path.join(os.tmpdir(), "lastminuteprep.db")
   : path.join(__dirname, "..", "..", "data", "lastminuteprep.db");
 
 let sqliteDb = null;
@@ -283,6 +284,10 @@ async function initDb() {
     await seedAdmin();
   } catch (error) {
     if (runtimeMode === "postgres") {
+      if (isVercel) {
+        throw new Error(`Postgres initialization failed on Vercel: ${error.message}`);
+      }
+
       console.warn("Postgres initialization failed, falling back to SQLite.", error.message);
       runtimeMode = "sqlite";
       if (!sqliteDb) {
