@@ -71,14 +71,15 @@ git push
 
 - SESSION_SECRET = any long random secret
 - NODE_ENV = production
-- DATABASE_URL = your Supabase Postgres connection string
+- DATABASE_URL = your Supabase Postgres *pooler* connection string (preferred for Vercel)
 - SUPABASE_URL = your Supabase project URL
 - SUPABASE_SERVICE_ROLE_KEY = your Supabase service_role key (not anon, not publishable)
 - SUPABASE_BUCKET = notes
 
 Important:
 - If DB password contains special characters like @ or :, URL-encode them in DATABASE_URL.
-- In Supabase dashboard use Connect -> URI and copy the exact ready connection string.
+- In Supabase dashboard use Connect -> Database -> Connection pooling and copy the exact ready pooler string.
+- For local development, remove DATABASE_URL from .env so the app uses SQLite and starts immediately.
 
 ### 5. Deploy
 
@@ -122,7 +123,7 @@ When the environment variables are set, the app:
 ### Minimum setup tasks
 
 1. Create a Supabase project.
-2. Copy the project Postgres connection string into DATABASE_URL.
+2. Copy the *pooler* Postgres connection string into DATABASE_URL.
 3. Create a public Storage bucket named notes.
 4. Put the bucket name in SUPABASE_BUCKET.
 5. Paste the project URL into SUPABASE_URL.
