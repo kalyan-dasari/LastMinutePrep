@@ -4,8 +4,6 @@ const crypto = require("crypto");
 const express = require("express");
 const session = require("express-session");
 const SQLiteStore = require("connect-sqlite3")(session);
-const PgSession = require("connect-pg-simple")(session);
-const { Pool } = require("pg");
 const dotenv = require("dotenv");
 const notesRoutes = require("./routes/notes");
 const authRoutes = require("./routes/auth");
@@ -42,17 +40,7 @@ const sessionConfig = {
   },
 };
 
-if (isVercel && process.env.DATABASE_URL) {
-  const sessionPool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: process.env.NODE_ENV === "production" || isVercel ? { rejectUnauthorized: false } : false,
-  });
-
-  sessionConfig.store = new PgSession({
-    pool: sessionPool,
-    createTableIfMissing: true,
-  });
-} else if (!isVercel) {
+if (!isVercel) {
   sessionConfig.store = new SQLiteStore({ db: "sessions.db", dir: "./data" });
 }
 
