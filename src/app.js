@@ -4,6 +4,7 @@ const crypto = require("crypto");
 const express = require("express");
 const session = require("express-session");
 const SQLiteStore = require("connect-sqlite3")(session);
+const PgSessionStore = require("connect-pg-simple")(session);
 const dotenv = require("dotenv");
 const notesRoutes = require("./routes/notes");
 const authRoutes = require("./routes/auth");
@@ -14,6 +15,7 @@ dotenv.config();
 
 const app = express();
 const isVercel = Boolean(process.env.VERCEL);
+const hasDatabaseUrl = Boolean(process.env.DATABASE_URL);
 const uploadsDir = isVercel ? path.join("/tmp", "uploads") : path.join(__dirname, "..", "uploads");
 
 fs.mkdirSync(uploadsDir, { recursive: true });
@@ -37,10 +39,19 @@ const sessionConfig = {
   cookie: {
     maxAge: 1000 * 60 * 60 * 24 * 7,
     httpOnly: true,
+    sameSite: "lax",
+    secure: isVercel || process.env.NODE_ENV === "production",
   },
 };
 
-if (!isVercel) {
+if (hasDatabaseUrl) {
+  sessionConfig.store = new PgSessionStore({
+    conString: process.env.DATABASE_URL,
+    tableName: "session",
+    createTableIfMissing: true,
+    ssl: process.env.NODE_ENV === "production" || isVercel ? { rejectUnauthorized: false } : false,
+  });
+} else if (!isVercel) {
   sessionConfig.store = new SQLiteStore({ db: "sessions.db", dir: "./data" });
 }
 
