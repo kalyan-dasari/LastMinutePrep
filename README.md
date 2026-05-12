@@ -77,10 +77,6 @@ Read full message at:
 
 ## Deploying Live
 
-For Vercel and Supabase deployment steps, see:
-
-- [DEPLOY_VERCEL.md](DEPLOY_VERCEL.md)
-
 Production environment variables typically include:
 
 - SESSION_SECRET
