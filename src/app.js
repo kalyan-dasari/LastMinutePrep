@@ -44,19 +44,6 @@ const sessionConfig = {
   },
 };
 
-if (hasDatabaseUrl) {
-  sessionConfig.store = new PgSessionStore({
-    conString: process.env.DATABASE_URL,
-    tableName: "session",
-    createTableIfMissing: true,
-    ssl: process.env.NODE_ENV === "production" || isVercel ? { rejectUnauthorized: false } : false,
-  });
-} else if (!isVercel) {
-  sessionConfig.store = new SQLiteStore({ db: "sessions.db", dir: "./data" });
-}
-
-app.use(session(sessionConfig));
-
 app.use((req, res, next) => {
   if (!req.session.guestToken) {
     req.session.guestToken = crypto.randomUUID();
@@ -91,6 +78,35 @@ app.use((err, req, res, next) => {
 });
 
 async function bootstrap() {
+  let sessionStore;
+  if (hasDatabaseUrl) {
+    try {
+      const { Pool } = require("pg");
+      const testPool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+        ssl: process.env.NODE_ENV === "production" || isVercel ? { rejectUnauthorized: false } : false,
+      });
+      await testPool.query("SELECT 1");
+      await testPool.end();
+      sessionStore = new PgSessionStore({
+        conString: process.env.DATABASE_URL,
+        tableName: "session",
+        createTableIfMissing: true,
+        ssl: process.env.NODE_ENV === "production" || isVercel ? { rejectUnauthorized: false } : false,
+      });
+      console.log("Connected to Postgres for sessions.");
+    } catch (err) {
+      console.warn("Postgres unavailable, using SQLite for sessions.", err.message);
+    }
+  }
+  if (!sessionStore && !isVercel) {
+    try {
+      sessionStore = new SQLiteStore({ db: "sessions.db", dir: "./data" });
+    } catch (err) {
+      console.warn("SQLite session store failed, using in-memory store.", err.message);
+    }
+  }
+  app.use(session({ ...sessionConfig, store: sessionStore }));
   await initDb();
 }
 
