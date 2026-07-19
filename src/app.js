@@ -44,39 +44,6 @@ const sessionConfig = {
   },
 };
 
-app.use((req, res, next) => {
-  if (!req.session.guestToken) {
-    req.session.guestToken = crypto.randomUUID();
-  }
-  res.locals.currentUser = req.session.user || null;
-  res.locals.currentPath = req.path;
-  next();
-});
-
-app.use(authRoutes);
-app.use(notesRoutes);
-app.use(userRoutes);
-
-app.use((err, req, res, next) => {
-  if (res.headersSent) {
-    return next(err);
-  }
-
-  if (err.message && err.message.includes("Only PDF")) {
-    return res.status(400).render("upload", {
-      title: "Upload Notes",
-      errors: [{ msg: err.message }],
-      old: req.body || {},
-    });
-  }
-
-  console.error(err);
-  return res.status(500).render("error", {
-    title: "Server Error",
-    message: "Something went wrong. Please try again.",
-  });
-});
-
 async function bootstrap() {
   let sessionStore;
   if (hasDatabaseUrl) {
@@ -107,6 +74,40 @@ async function bootstrap() {
     }
   }
   app.use(session({ ...sessionConfig, store: sessionStore }));
+
+  app.use((req, res, next) => {
+    if (!req.session.guestToken) {
+      req.session.guestToken = crypto.randomUUID();
+    }
+    res.locals.currentUser = req.session.user || null;
+    res.locals.currentPath = req.path;
+    next();
+  });
+
+  app.use(authRoutes);
+  app.use(notesRoutes);
+  app.use(userRoutes);
+
+  app.use((err, req, res, next) => {
+    if (res.headersSent) {
+      return next(err);
+    }
+
+    if (err.message && err.message.includes("Only PDF")) {
+      return res.status(400).render("upload", {
+        title: "Upload Notes",
+        errors: [{ msg: err.message }],
+        old: req.body || {},
+      });
+    }
+
+    console.error(err);
+    return res.status(500).render("error", {
+      title: "Server Error",
+      message: "Something went wrong. Please try again.",
+    });
+  });
+
   await initDb();
 }
 
