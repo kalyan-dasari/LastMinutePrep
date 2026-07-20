@@ -17,6 +17,7 @@
     </form>
     <a class="btn-primary" href="<%= note.file_path %>" download>Download PDF</a>
     <a class="btn-secondary" href="<%= note.file_path %>" target="_blank" rel="noopener">Open PDF in New Tab</a>
+    <button id="shareNoteBtn" class="btn-secondary" data-note-id="<%= note.id %>">Share Note</button>
     <span class="metric-pill">👍 <%= note.likes_count %></span>
     <span class="metric-pill">👁️ <%= note.views_count %></span>
   </div>

@@ -19,7 +19,10 @@
           <small>Your ReviseHub for Every Exam</small>
         </span>
       </a>
-      <nav class="nav-links">
+      <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="nav-links" id="navLinks">
         <a href="/">Home</a>
         <a href="/categories">Subjects</a>
         <a href="/leaderboard">Leaderboard</a>
@@ -41,4 +44,23 @@
         <% } %>
       </nav>
     </header>
+    <% if (typeof breadcrumbs !== 'undefined' && breadcrumbs && breadcrumbs.length > 0) { %>
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <ol>
+          <% breadcrumbs.forEach((crumb, index) => { %>
+            <% if (index > 0) { %>
+              <li aria-hidden="true">/</li>
+            <% } %>
+            <li>
+              <% if (index < breadcrumbs.length - 1) { %>
+                <a href="<%= crumb.href %>"><%= crumb.label %></a>
+              <% } else { %>
+                <span aria-current="page"><%= crumb.label %></span>
+              <% } %>
+            </li>
+          <% }) %>
+        </ol>
+      </nav>
+    <% } %>
     <main class="container">
+    <div class="toast-container"></div>
