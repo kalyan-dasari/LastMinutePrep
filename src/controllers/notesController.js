@@ -91,11 +91,17 @@ router.get("/", async (req, res) => {
     filters: req.query,
     subjects: subjects.map((x) => x.subject),
     branches: branches.map((x) => x.branch),
+    breadcrumbs: [
+      { label: "Home", href: "/" },
+    ],
   });
 });
 
 router.get("/upload", ensureAuth, (_req, res) => {
-  res.render("upload", { title: "Upload Notes", errors: [], old: {} });
+  res.render("upload", { title: "Upload Notes", errors: [], old: {}, breadcrumbs: [
+    { label: "Home", href: "/" },
+    { label: "Upload Notes", href: "/upload" },
+  ] });
 });
 
 router.post(
@@ -214,6 +220,10 @@ router.get("/notes/:id", async (req, res) => {
     note,
     comments,
     likedByMe,
+    breadcrumbs: [
+      { label: "Home", href: "/" },
+      { label: note.title, href: `/notes/${note.id}` },
+    ],
   });
 });
 
@@ -290,7 +300,10 @@ router.get("/leaderboard", async (_req, res) => {
       LIMIT 25`
   );
 
-  res.render("leaderboard", { title: "Leaderboard", board });
+  res.render("leaderboard", { title: "Leaderboard", board, breadcrumbs: [
+    { label: "Home", href: "/" },
+    { label: "Leaderboard", href: "/leaderboard" },
+  ] });
 });
 
 router.get("/categories", async (_req, res) => {
@@ -329,7 +342,10 @@ router.get("/categories", async (_req, res) => {
       ORDER BY s.note_count DESC, s.subject ASC`
   );
 
-  res.render("categories", { title: "Categories", categories });
+  res.render("categories", { title: "Categories", categories, breadcrumbs: [
+    { label: "Home", href: "/" },
+    { label: "Categories", href: "/categories" },
+  ] });
 });
 
 router.get("/last-minute", async (_req, res) => {
@@ -355,11 +371,18 @@ router.get("/last-minute", async (_req, res) => {
     title: "Last Minute Mode",
     topLiked,
     shortSummaries,
+    breadcrumbs: [
+      { label: "Home", href: "/" },
+      { label: "Last Minute Mode", href: "/last-minute" },
+    ],
   });
 });
 
 router.get("/admin-note", (_req, res) => {
-  res.render("admin-note", { title: "Admin Note" });
+  res.render("admin-note", { title: "Admin Note", breadcrumbs: [
+    { label: "Home", href: "/" },
+    { label: "Admin Note", href: "/admin-note" },
+  ] });
 });
 
 router.get("/notes/:id/share", async (req, res) => {
@@ -380,6 +403,11 @@ router.get("/notes/:id/share", async (req, res) => {
     title: `Share: ${note.title}`,
     note,
     shareUrl,
+    breadcrumbs: [
+      { label: "Home", href: "/" },
+      { label: note.title, href: `/notes/${note.id}` },
+      { label: "Share", href: `/notes/${note.id}/share` },
+    ],
   });
 });
 
@@ -426,6 +454,30 @@ router.get("/search/suggestions", async (req, res) => {
       ...branches.map((b) => ({ ...b, type: "branch" })),
     ],
   });
+});
+
+router.get("/api/notes", async (req, res) => {
+  const page = Math.max(1, parseInt(req.query.page || "1", 10) || 1);
+  const limit = Math.min(50, Math.max(1, parseInt(req.query.limit || "12", 10) || 12));
+  const offset = (page - 1) * limit;
+
+  const { where, params } = buildFilters(req.query);
+
+  let sort = "n.created_at DESC";
+  if (req.query.sort === "liked") sort = "n.likes_count DESC, n.created_at DESC";
+  if (req.query.sort === "viewed") sort = "n.views_count DESC, n.created_at DESC";
+
+  const notes = await all(
+    `SELECT n.*, u.name AS contributor_name
+       FROM notes n
+       JOIN users u ON u.id = n.user_id
+      ${where}
+     ORDER BY ${sort}
+     LIMIT ? OFFSET ?`,
+    [...params, limit, offset]
+  );
+
+  res.json({ notes });
 });
 
 module.exports = router;

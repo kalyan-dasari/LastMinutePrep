@@ -7,7 +7,10 @@ const { ensureGuest } = require("../middleware/auth");
 const router = express.Router();
 
 router.get("/register", ensureGuest, (req, res) => {
-  res.render("register", { title: "Register", errors: [], old: {} });
+  res.render("register", { title: "Register", errors: [], old: {}, breadcrumbs: [
+    { label: "Home", href: "/" },
+    { label: "Register", href: "/register" },
+  ] });
 });
 
 router.post(
@@ -53,7 +56,10 @@ router.post(
 );
 
 router.get("/login", ensureGuest, (req, res) => {
-  res.render("login", { title: "Login", errors: [], old: {} });
+  res.render("login", { title: "Login", errors: [], old: {}, breadcrumbs: [
+    { label: "Home", href: "/" },
+    { label: "Login", href: "/login" },
+  ] });
 });
 
 router.post(
@@ -154,6 +160,10 @@ router.get("/profile/:id", async (req, res) => {
     likesReceived: totals.likes_received,
     uploadsCount: totals.uploads_count,
     rank,
+    breadcrumbs: [
+      { label: "Home", href: "/" },
+      { label: user.name, href: `/profile/${user.id}` },
+    ],
   });
 });
 

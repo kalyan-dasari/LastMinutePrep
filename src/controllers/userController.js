@@ -45,6 +45,10 @@ router.get("/dashboard", ensureAuth, async (req, res) => {
     uploads,
     totals,
     rank,
+    breadcrumbs: [
+      { label: "Home", href: "/" },
+      { label: "Dashboard", href: "/dashboard" },
+    ],
   });
 });
 
@@ -62,7 +66,10 @@ router.get("/admin", ensureAuth, ensureAdmin, async (_req, res) => {
       ORDER BY created_at DESC`
   );
 
-  res.render("admin", { title: "Admin Panel", notes, users });
+  res.render("admin", { title: "Admin Panel", notes, users, breadcrumbs: [
+    { label: "Home", href: "/" },
+    { label: "Admin Panel", href: "/admin" },
+  ] });
 });
 
 router.post("/admin/notes/:id/delete", ensureAuth, ensureAdmin, async (req, res) => {
